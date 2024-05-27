@@ -32,18 +32,18 @@ void loop() {
   unsigned long currentMillis = millis();
   float temp = temperatureSensor.getTemperature();
 
-  handleBluetoothCommands();
+  handleBluetoothCommands(currentMillis);
 
   manageMeasurements(currentMillis, temp);
 
 }
 
-void handleBluetoothCommands() {
+void handleBluetoothCommands(long currentMillis) {
   while (Serial.available() > 0) {
       char data = Serial.read();
       switch (data) {
         case 's':
-          startMeasurement();
+          startMeasurement(currentMillis);
           break;
         case 'p':
           stopMeasurement();
@@ -56,7 +56,7 @@ void handleBluetoothCommands() {
 }
 
 
-void startMeasurement() {
+void startMeasurement(long currentMillis) {
 
     if (measurementPtr == nullptr) {
         measurementPtr = new Measurement(currentMillis);
