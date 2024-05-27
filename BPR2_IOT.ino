@@ -1,14 +1,16 @@
 #include "Sensor.h"
 #include "Measurement.h"
-#include "SafeStringReader.h"
 
 // Define pins
-#define STATUS_PIN 12    // Pin 12 on Arduino has the status pin from the HC-05.
-#define ONE_WIRE_BUS 2  // Pin 2 on Arduino has the One Wire Bus for the temperature sensor.
+
+// Pin 12 on Arduino has the status pin from the HC-05.
+#define STATUS_PIN 12
+// Pin 2 on Arduino has the One Wire Bus for the temperature sensor.
+#define ONE_WIRE_BUS 2  
+
 
 // Instantiate objects
-Measurement* measurementPtr = nullptr;  // Initialize to nullptr
-createSafeStringReader(sfReader, 5, " ,\r\n");  // Create Safe String Reader object
+Measurement* measurementPtr = nullptr; 
 Sensor temperatureSensor(ONE_WIRE_BUS);
 
 // Instantiate variables
@@ -22,13 +24,11 @@ void setup() {
     // Make status pin from HC-05 as input.
     pinMode(STATUS_PIN, INPUT);
 
-    SafeString::setOutput(Serial);
     temperatureSensor.begin();
-    sfReader.connect(Serial); // where SafeStringReader will read from
-    sfReader.echoOn(); // echo back all input, by default echo is off
 }
 
 void loop() {
+
   unsigned long currentMillis = millis();
   float temp = temperatureSensor.getTemperature();
 
@@ -39,21 +39,27 @@ void loop() {
 }
 
 void handleBluetoothCommands() {
-  if (sfReader.read()) {
-        if (sfReader == "start") {
-            startMeasurement();
-        } else if (sfReader == "stop") {
-            stopMeasurement();
-        } else {
-            Serial.println("Unknown command");
-        }
-    }
+  while (Serial.available() > 0) {
+      char data = Serial.read();
+      switch (data) {
+        case 's':
+          startMeasurement();
+          break;
+        case 'p':
+          stopMeasurement();
+          break;
+        default:
+          break;
+      }        
+      return;
+  }
 }
 
 
 void startMeasurement() {
+
     if (measurementPtr == nullptr) {
-        measurementPtr = new Measurement(millis());
+        measurementPtr = new Measurement(currentMillis);
         Serial.println("(Start command received)");
     } else {
         Serial.println("Measurement already started");
@@ -85,10 +91,6 @@ void sendAndClearRecords() {
 
 
 void manageMeasurements(unsigned long currentMillis, float temp) {
-    if (Serial.available() > 0) {
-        return;
-    }
-
     if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
 
@@ -98,7 +100,9 @@ void manageMeasurements(unsigned long currentMillis, float temp) {
                     sendAndClearRecords();
                     sendTemp(temp, (currentMillis - measurementPtr->getStartTime()));
                 } else {
-                    measurementPtr->addRecord(temp, (currentMillis - measurementPtr->getStartTime()));
+                    measurementPtr->addRecord(temp, (currentMillis - 
+                    measurementPtr->getStartTime()
+                    ));
                 }
             } else if (digitalRead(STATUS_PIN)) {
                 sendTemp(temp, currentMillis);
@@ -114,3 +118,4 @@ void sendTemp(float temp, long timestamp) {
     Serial.print(timestamp);
     Serial.println("}");
 }
+

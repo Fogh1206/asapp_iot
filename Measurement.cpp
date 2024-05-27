@@ -50,13 +50,6 @@ void Measurement::sendAllRecords() {
   }
 }
 
-void Measurement::sendLatestRecord() {
-  if (recordCount > 0) {
-    sendMessage(records[recordCount - 1].value, records[recordCount - 1].timestamp);
-    recordCount--;
-  }
-}
-
 Record Measurement::getRecordByIndex(int index) {
   if (index >= 0 && index < recordCount) {
     return records[index];
