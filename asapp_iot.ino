@@ -16,7 +16,7 @@ Sensor temperatureSensor(ONE_WIRE_BUS);
 
 // Instantiate variables
 unsigned long previousMillis = 0;               // Stores the last time data was sent
-const long interval = 5000;                     // Interval between data transmissions (in milliseconds)
+const long interval = 60*1000;                     // Interval between data transmissions (in milliseconds)
 
 void setup() {
 
@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
 
-  Test::run();
+  //Test::run();
 
   unsigned long currentMillis = millis();
   float temp = temperatureSensor.getTemperature();
