@@ -1,5 +1,6 @@
 #include "Sensor.h"
 #include "Measurement.h"
+#include <ArduinoUnit.h>
 
 // Define pins
 
@@ -18,16 +19,19 @@ unsigned long previousMillis = 0;               // Stores the last time data was
 const long interval = 5000;                     // Interval between data transmissions (in milliseconds)
 
 void setup() {
-    // Begin serial port on 9600. This is used by Bluetooth.
-    Serial.begin(9600);
 
-    // Make status pin from HC-05 as input.
-    pinMode(STATUS_PIN, INPUT);
+  // Begin serial port on 9600. This is used by Bluetooth.
+  Serial.begin(9600);
 
-    temperatureSensor.begin();
+  // Make status pin from HC-05 as input.
+  pinMode(STATUS_PIN, INPUT);
+
+  temperatureSensor.begin();
 }
 
 void loop() {
+
+  Test::run();
 
   unsigned long currentMillis = millis();
   float temp = temperatureSensor.getTemperature();
@@ -118,4 +122,7 @@ void sendTemp(float temp, long timestamp) {
     Serial.print(timestamp);
     Serial.println("}");
 }
+
+
+
 
