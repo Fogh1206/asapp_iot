@@ -31,7 +31,7 @@ void setup() {
 
 void loop() {
 
-  //Test::run();
+  Test::run();
 
   unsigned long currentMillis = millis();
   float temp = temperatureSensor.getTemperature();
